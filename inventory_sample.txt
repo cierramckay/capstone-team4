@@ -1,0 +1,6 @@
+SKU,Item_Name,Category,Quantity,Unit,Lot_Number,Expiration_Date,Location
+MUSE-002,Muse 2 EEG Headband,Hardware Device,15,Units,LOT2026A01,2028-12-31,Cabinet A-1
+ELC-GLD-04,Conductive Gold Electrodes (Set of 4),Consumables,50,Packs,GLD-8842,2030-01-15,Shelf B-2
+CHG-USB-C,5V USB-C Charging Cable,Accessories,30,Pieces,CBL-9921,,Drawer C-3
+SEN-TP9-REF,TP9/TP10 Reference Sensor Po-ds,Hardware Components,25,Units,REF-3310,2029-06-30,Shelf B-1
+BAT-LIP-38,38.5g Lithium-Ion Battery Pack,Components,12,Units,BAT-5512,2027-05-10,Cabinet A-2

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Depends
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from parser import parse_file
@@ -28,8 +28,11 @@ async def upload_file(
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    df = await parse_file(file)
-    clean_df = validate_inventory(df)
+    try:
+        df = await parse_file(file)
+        clean_df = validate_inventory(df)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     for _, row in clean_df.iterrows():
         item_name = row["item_name"]
