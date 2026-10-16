@@ -1,4 +1,12 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    String,
+)
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
@@ -12,6 +20,7 @@ class InventoryItem(Base):
     quantity = Column(Float)
     unit = Column(String)
     expiration_date = Column(DateTime)
+    encrypted_metadata = Column(LargeBinary, nullable=True)
 
     versions = relationship("InventoryVersion", back_populates="item")
 
