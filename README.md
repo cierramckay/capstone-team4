@@ -10,3 +10,14 @@ The app migrates an existing `inventory_items` table when it starts.
 Set `INVENTORY_ENCRYPTION_KEY` to a Fernet key for deployments. If it is unset,
 the app creates and reuses a local `secret.key` file. Keep that key backed up and
 private: encrypted metadata cannot be recovered without the same key.
+
+The command-line client uses the same parser, validator, database, and encryption
+code as the API:
+
+```sh
+python inventory_cli.py upload path/to/inventory.csv
+python inventory_cli.py view
+```
+
+Supported upload formats are the same as the application parser: CSV, Excel,
+PDF, and Word tables.

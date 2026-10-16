@@ -1,11 +1,10 @@
 from contextlib import asynccontextmanager
 
-import pandas as pd
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from encryption import encrypt_metadata
 from init_db import init_db
+from inventory_service import save_inventory
 from parser import parse_file
 from validator import validate_inventory
 from database import SessionLocal
@@ -45,50 +44,7 @@ async def upload_file(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    metadata_columns = [
-        column for column in ("lot_number", "location") if column in clean_df.columns
-    ]
-
-    for _, row in clean_df.iterrows():
-        item_name = row["item_name"]
-        quantity = float(row["quantity"])
-        unit = row["unit"]
-        expiration_date = row["expiration_date"]
-        metadata = {
-            column: str(row[column]).strip()
-            for column in metadata_columns
-            if not pd.isna(row[column]) and str(row[column]).strip()
-        }
-        encrypted_metadata = encrypt_metadata(metadata)
-
-        # Check if item already exists
-        item = db.query(models.InventoryItem).filter_by(item_name=item_name).first()
-
-        if not item:
-            item = models.InventoryItem(
-                item_name=item_name,
-                quantity=quantity,
-                unit=unit,
-                expiration_date=expiration_date,
-                encrypted_metadata=encrypted_metadata,
-            )
-            db.add(item)
-            db.flush()
-        else:
-            item.quantity = quantity
-            item.expiration_date = expiration_date
-            if metadata_columns:
-                item.encrypted_metadata = encrypted_metadata
-
-        # Create version entry
-        version = models.InventoryVersion(
-            item_id=item.id,
-            quantity=quantity,
-            expiration_date=expiration_date,
-        )
-        db.add(version)
-
-    db.commit()
+    save_inventory(clean_df, db)
 
     response_df = clean_df.drop(columns=["lot_number", "location"], errors="ignore")
     return {
